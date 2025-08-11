@@ -6,6 +6,7 @@
 
 | Supported TOUCH Controller    | GT911 |
 | ----------------------------| -------|
-## How to use the example
+##  the example waveshare esp32 s3 touch lcd 7b 1024*600 modified 
+
 
 
