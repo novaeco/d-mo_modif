@@ -24,7 +24,7 @@ const lv_img_dsc_t ui_img_ok_png = {
     .header.w = 20,
     .header.h = 20,
     .data_size = sizeof(ui_img_ok_png_data),
-    .header.cf = LV_COLOR_FORMAT_ARGB8888,
+    .header.cf = LV_COLOR_FORMAT_RGB888,
     .data = ui_img_ok_png_data
 };
 

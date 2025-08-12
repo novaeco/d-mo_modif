@@ -1518,7 +1518,7 @@ const lv_img_dsc_t ui_img_can_png = {
     .header.w = 400,
     .header.h = 240,
     .data_size = sizeof(ui_img_can_png_data),
-    .header.cf = LV_COLOR_FORMAT_ARGB8888,
+    .header.cf = LV_COLOR_FORMAT_RGB888,
     .data = ui_img_can_png_data
 };
 
