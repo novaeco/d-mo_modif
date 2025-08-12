@@ -1,0 +1,12 @@
+# IDF build
+build/
+sdkconfig.old
+sdkconfig.ci
+# IDE
+.vscode/
+.idea/
+# Python venv
+.venv/
+# Misc
+*.log
+*.bak
