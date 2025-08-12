@@ -1,0 +1,1 @@
+{ "version": "2.0.0", "tasks": [ { "label": "IDF: set-target esp32s3", "type": "shell", "command": "idf.py set-target esp32s3" }, { "label": "IDF: build", "type": "shell", "command": "idf.py build" }, { "label": "IDF: fullclean", "type": "shell", "command": "idf.py fullclean" }, { "label": "IDF: size", "type": "shell", "command": "idf.py size-components" } ] }
