@@ -1,6 +1,1 @@
-// Settings configuration for Visual Studio Code
-{
-    "editor.fontSize": 14,
-    "editor.tabSize": 4,
-    "files.autoSave": "onWindowChange"
-}
+{ "cmake.generator": "Ninja", "idf.espIdfPath": "${env:IDF_PATH}", "idf.pythonBinPath": "/usr/bin/python3", "idf.port": "auto", "idf.openOcdConfigs": [], "editor.formatOnSave": true }
