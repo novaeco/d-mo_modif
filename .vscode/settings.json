@@ -1,1 +1,8 @@
-{ "cmake.generator": "Ninja", "idf.espIdfPath": "${env:IDF_PATH}", "idf.pythonBinPath": "/usr/bin/python3", "idf.port": "auto", "idf.openOcdConfigs": [], "editor.formatOnSave": true }
+{
+  "cmake.generator": "Ninja",
+  "idf.espIdfPath": "${env:IDF_PATH}",
+  "idf.pythonBinPath": "/usr/bin/python3",
+  "idf.port": "auto",
+  "idf.openOcdConfigs": [],
+  "editor.formatOnSave": true
+}
