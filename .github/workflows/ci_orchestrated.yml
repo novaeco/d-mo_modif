@@ -1,0 +1,190 @@
+name: Orchestration CI (Agents cascade)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  preflight:
+    name: Preflight (repo sanity)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check required files
+        run: |
+          test -f AGENTS.md || (echo "AGENTS.md manquant" && exit 1)
+          test -d agents || (echo "dossier agents/ manquant" && exit 1)
+          echo "OK: AGENTS.md & agents/ présents"
+      - name: Show tree (top)
+        run: |
+          ls -la
+          echo "----"
+          ls -la agents || true
+
+  build:
+    name: build_agent
+    needs: preflight
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:release-v5.5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Export IDF & set target
+        shell: bash
+        run: |
+          . ${IDF_PATH}/export.sh
+          idf.py set-target esp32s3
+      - name: Build (main app)
+        shell: bash
+        run: |
+          . ${IDF_PATH}/export.sh
+          idf.py build
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-main
+          path: |
+            build/*.bin
+            build/bootloader/*.bin
+            build/partition_table/*.bin
+            build/*.elf
+
+  smoke_tests:
+    name: test_agent (smoke LVGL)
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:release-v5.5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build tests/smoke
+        shell: bash
+        run: |
+          . ${IDF_PATH}/export.sh
+          idf.py -C tests/smoke set-target esp32s3
+          idf.py -C tests/smoke build
+      - name: Upload smoke artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-smoke
+          path: |
+            tests/smoke/build/*.bin
+            tests/smoke/build/*/*.bin
+            tests/smoke/build/*.elf
+
+  static_analysis:
+    name: static_analysis_agent (cppcheck)
+    needs: smoke_tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install cppcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cppcheck
+      - name: Run cppcheck (components/ and main/)
+        run: |
+          cppcheck --error-exitcode=1 --enable=warning,style,performance,portability --inline-suppr \
+            --language=c --std=c11 \
+            components 2> cppcheck-report.txt || true
+          cppcheck --error-exitcode=1 --enable=warning,style,performance,portability --inline-suppr \
+            --language=c --std=c11 \
+            main 2>> cppcheck-report.txt || true
+          if [ -s cppcheck-report.txt ]; then
+            echo "cppcheck produced findings (non-bloquants)"; cat cppcheck-report.txt
+          else
+            echo "cppcheck clean"
+          fi
+      - name: Upload cppcheck report
+        uses: actions/upload-artifact@v4
+        with:
+          name: cppcheck-report
+          path: cppcheck-report.txt
+
+  secret_scan:
+    name: security_agent (gitleaks)
+    needs: static_analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --no-git -v --report-path gitleaks-report.json || true
+      - name: Upload gitleaks report
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+
+  size_report:
+    name: performance_agent (size)
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:release-v5.5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Size components
+        shell: bash
+        run: |
+          . ${IDF_PATH}/export.sh
+          idf.py size-components | tee size-components.txt || true
+      - name: Upload size report
+        uses: actions/upload-artifact@v4
+        with:
+          name: size-report
+          path: size-components.txt
+
+  docs_check:
+    name: docs_agent (readme/agents presence)
+    needs: secret_scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Ensure README has build section
+        run: |
+          if grep -Eiq 'Build rapide|Build|How to use' README.md; then
+            echo "README build section found"
+          else
+            echo "README lacks build instructions"; exit 1
+          fi
+
+  release:
+    name: release_agent
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build, smoke_tests, static_analysis, secret_scan, size_report, docs_check]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download firmware artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
