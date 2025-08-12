@@ -1,0 +1,42 @@
+name: CI (ESP-IDF v5.5, ESP32-S3)
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: espressif/idf:release-v5.5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Show IDF version
+        run: idf.py --version || echo "idf.py present"
+      - name: Set target
+        run: idf.py set-target esp32s3
+      - name: Export IDF
+        run: . ${IDF_PATH}/export.sh
+      - name: IDF component manager (offline if possible)
+        run: |
+          python --version
+          idf.py reconfigure || true
+      - name: Build
+        run: idf.py build
+      - name: Size
+        if: always()
+        run: idf.py size-components || true
+      - name: Artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            build/*.bin
+            build/bootloader/*.bin
+            build/partition_table/*.bin
+            build/*.elf
