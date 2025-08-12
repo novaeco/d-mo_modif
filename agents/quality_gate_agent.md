@@ -1,13 +1,13 @@
-# cmake_agent — Rôle & Procédures
+# quality_gate_agent — Rôle & Procédures
 
 ## Mission
-Sanitiser CMake/IDF.
+Gate final avant merge.
 
 ## Périmètre
-Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
+Agrégation des résultats de tests, analyses statiques, conformité, sécurité.
 
 ## Livrables
-- CMakeLists propres, dépendances minimales.
+- Verdict synthèse + liste non-conformités bloquantes.
 
 ## Étapes d’exécution (standard)
 1. **Préparer l’environnement** : utiliser les scripts/Makefile existants (`bash scripts/build.sh`, `make build`) si applicable.
@@ -17,7 +17,7 @@ Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
 5. **Assurer état Git propre** (`git status --short` vide) avant de terminer.
 
 ## Checks (obligatoires)
-- `idf.py build` OK ; pas d’include circulaire ; taille stable.
+- Tous les jobs CI green ; aucun secret ; licences OK ; taille firmware sous plafond.
 
 ## Citations dans la réponse finale
 - Fichier : `F:path/to/file†Lstart(-Lend)?`

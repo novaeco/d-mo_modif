@@ -1,13 +1,13 @@
-# cmake_agent — Rôle & Procédures
+# fault_injection_agent — Rôle & Procédures
 
 ## Mission
-Sanitiser CMake/IDF.
+Injection de fautes.
 
 ## Périmètre
-Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
+Timeouts I2C, pertes trames, erreurs aléatoires.
 
 ## Livrables
-- CMakeLists propres, dépendances minimales.
+- Scénarios + scripts.
 
 ## Étapes d’exécution (standard)
 1. **Préparer l’environnement** : utiliser les scripts/Makefile existants (`bash scripts/build.sh`, `make build`) si applicable.
@@ -17,7 +17,7 @@ Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
 5. **Assurer état Git propre** (`git status --short` vide) avant de terminer.
 
 ## Checks (obligatoires)
-- `idf.py build` OK ; pas d’include circulaire ; taille stable.
+- Résilience démontrée ; pas de crash.
 
 ## Citations dans la réponse finale
 - Fichier : `F:path/to/file†Lstart(-Lend)?`

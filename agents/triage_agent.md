@@ -1,13 +1,13 @@
-# cmake_agent — Rôle & Procédures
+# triage_agent — Rôle & Procédures
 
 ## Mission
-Sanitiser CMake/IDF.
+Triage & priorisation des issues/PR.
 
 ## Périmètre
-Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
+Lecture issues/PR, classification, routing vers agents concernés, définition des priorités.
 
 ## Livrables
-- CMakeLists propres, dépendances minimales.
+- Plan d’exécution priorisé, étiquetage des tickets/PR.
 
 ## Étapes d’exécution (standard)
 1. **Préparer l’environnement** : utiliser les scripts/Makefile existants (`bash scripts/build.sh`, `make build`) si applicable.
@@ -17,7 +17,7 @@ Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
 5. **Assurer état Git propre** (`git status --short` vide) avant de terminer.
 
 ## Checks (obligatoires)
-- `idf.py build` OK ; pas d’include circulaire ; taille stable.
+- Aucun code modifié ; cohérence des labels ; pas de tâches orphelines.
 
 ## Citations dans la réponse finale
 - Fichier : `F:path/to/file†Lstart(-Lend)?`

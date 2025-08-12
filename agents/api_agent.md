@@ -1,13 +1,13 @@
-# cmake_agent — Rôle & Procédures
+# api_agent — Rôle & Procédures
 
 ## Mission
-Sanitiser CMake/IDF.
+Stabiliser les contrats d’API.
 
 ## Périmètre
-Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
+Headers publics, versioning d’API/ABI.
 
 ## Livrables
-- CMakeLists propres, dépendances minimales.
+- Headers documentés + changelog API.
 
 ## Étapes d’exécution (standard)
 1. **Préparer l’environnement** : utiliser les scripts/Makefile existants (`bash scripts/build.sh`, `make build`) si applicable.
@@ -17,7 +17,7 @@ Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
 5. **Assurer état Git propre** (`git status --short` vide) avant de terminer.
 
 ## Checks (obligatoires)
-- `idf.py build` OK ; pas d’include circulaire ; taille stable.
+- Pas de breaking change non annoncé ; IWYU OK.
 
 ## Citations dans la réponse finale
 - Fichier : `F:path/to/file†Lstart(-Lend)?`

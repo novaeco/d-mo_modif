@@ -1,13 +1,13 @@
-# cmake_agent — Rôle & Procédures
+# secret_scan_agent — Rôle & Procédures
 
 ## Mission
-Sanitiser CMake/IDF.
+Scan de secrets.
 
 ## Périmètre
-Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
+Recherche clefs/cert/secrets.
 
 ## Livrables
-- CMakeLists propres, dépendances minimales.
+- Rapport + purge + git filters si besoin.
 
 ## Étapes d’exécution (standard)
 1. **Préparer l’environnement** : utiliser les scripts/Makefile existants (`bash scripts/build.sh`, `make build`) si applicable.
@@ -17,7 +17,7 @@ Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
 5. **Assurer état Git propre** (`git status --short` vide) avant de terminer.
 
 ## Checks (obligatoires)
-- `idf.py build` OK ; pas d’include circulaire ; taille stable.
+- Secrets = 0 en repo/artefacts.
 
 ## Citations dans la réponse finale
 - Fichier : `F:path/to/file†Lstart(-Lend)?`

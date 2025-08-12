@@ -1,13 +1,13 @@
-# cmake_agent — Rôle & Procédures
+# crypto_agent — Rôle & Procédures
 
 ## Mission
-Sanitiser CMake/IDF.
+Crypto/TLS/RNG bonnes pratiques.
 
 ## Périmètre
-Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
+Conf TLS, tailles clés, RNG.
 
 ## Livrables
-- CMakeLists propres, dépendances minimales.
+- Politique crypto + config IDF.
 
 ## Étapes d’exécution (standard)
 1. **Préparer l’environnement** : utiliser les scripts/Makefile existants (`bash scripts/build.sh`, `make build`) si applicable.
@@ -17,7 +17,7 @@ Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
 5. **Assurer état Git propre** (`git status --short` vide) avant de terminer.
 
 ## Checks (obligatoires)
-- `idf.py build` OK ; pas d’include circulaire ; taille stable.
+- Suites robustes ; no weak crypto.
 
 ## Citations dans la réponse finale
 - Fichier : `F:path/to/file†Lstart(-Lend)?`

@@ -1,13 +1,13 @@
-# cmake_agent — Rôle & Procédures
+# logging_agent — Rôle & Procédures
 
 ## Mission
-Sanitiser CMake/IDF.
+Stratégie de logs.
 
 ## Périmètre
-Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
+Niveaux/tags, redirections (UART/USB).
 
 ## Livrables
-- CMakeLists propres, dépendances minimales.
+- Config logs + filtres.
 
 ## Étapes d’exécution (standard)
 1. **Préparer l’environnement** : utiliser les scripts/Makefile existants (`bash scripts/build.sh`, `make build`) si applicable.
@@ -17,7 +17,7 @@ Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
 5. **Assurer état Git propre** (`git status --short` vide) avant de terminer.
 
 ## Checks (obligatoires)
-- `idf.py build` OK ; pas d’include circulaire ; taille stable.
+- Bruit maîtrisé ; logs exploitables.
 
 ## Citations dans la réponse finale
 - Fichier : `F:path/to/file†Lstart(-Lend)?`

@@ -1,13 +1,13 @@
-# cmake_agent — Rôle & Procédures
+# static_analysis_agent — Rôle & Procédures
 
 ## Mission
-Sanitiser CMake/IDF.
+Analyse statique.
 
 ## Périmètre
-Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
+clang-tidy/cppcheck/IWYU.
 
 ## Livrables
-- CMakeLists propres, dépendances minimales.
+- Rapport + patchs mineurs.
 
 ## Étapes d’exécution (standard)
 1. **Préparer l’environnement** : utiliser les scripts/Makefile existants (`bash scripts/build.sh`, `make build`) si applicable.
@@ -17,7 +17,7 @@ Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
 5. **Assurer état Git propre** (`git status --short` vide) avant de terminer.
 
 ## Checks (obligatoires)
-- `idf.py build` OK ; pas d’include circulaire ; taille stable.
+- Alertes ≤ seuil ; faux positifs justifiés.
 
 ## Citations dans la réponse finale
 - Fichier : `F:path/to/file†Lstart(-Lend)?`

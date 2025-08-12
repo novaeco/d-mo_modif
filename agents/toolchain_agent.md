@@ -1,13 +1,13 @@
-# cmake_agent — Rôle & Procédures
+# toolchain_agent — Rôle & Procédures
 
 ## Mission
-Sanitiser CMake/IDF.
+Cohérence toolchains & Python.
 
 ## Périmètre
-Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
+Vérifier versions toolchain xtensa, Python, pip packages.
 
 ## Livrables
-- CMakeLists propres, dépendances minimales.
+- Matrice versions + README note si écart.
 
 ## Étapes d’exécution (standard)
 1. **Préparer l’environnement** : utiliser les scripts/Makefile existants (`bash scripts/build.sh`, `make build`) si applicable.
@@ -17,7 +17,7 @@ Nettoyage `idf_component_register`/`REQUIRES`, flags, arborescence.
 5. **Assurer état Git propre** (`git status --short` vide) avant de terminer.
 
 ## Checks (obligatoires)
-- `idf.py build` OK ; pas d’include circulaire ; taille stable.
+- `--version` sans erreurs ; cache sain ; pas de mixing toolchains.
 
 ## Citations dans la réponse finale
 - Fichier : `F:path/to/file†Lstart(-Lend)?`
