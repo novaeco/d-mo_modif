@@ -1,14 +1,12 @@
 /*****************************************************************************
  * | File        :   rgb_lcd_port.h
- * | Author      :   Waveshare team
+ * | Author      :   Waveshare team (edited)
  * | Function    :   Hardware underlying interface
- * | Info        :
- *                   This header file contains configuration and function 
- *                   declarations for the RGB LCD driver interface.
+ * | Info        :   RGB LCD driver interface for ST7262 1024x600
  *----------------
- * | Version     :   V1.0
- * | Date        :   2024-11-19
- * | Info        :   Basic version
+ * | Version     :   V1.1
+ * | Date        :   2025-08-12
+ * | Changes     :   - Make pixel clock constant integral (no float in macro)
  *
  ******************************************************************************/
 
@@ -32,9 +30,9 @@
 /**
  * @brief LCD Resolution and Timing
  */
-#define EXAMPLE_LCD_H_RES               (1024)  ///< Horizontal resolution in pixels
-#define EXAMPLE_LCD_V_RES               (600)  ///< Vertical resolution in pixels
-#define EXAMPLE_LCD_PIXEL_CLOCK_HZ      (30.85 * 1000 * 1000) ///< Pixel clock frequency in Hz
+#define EXAMPLE_LCD_H_RES               (1024)   ///< Horizontal resolution in pixels
+#define EXAMPLE_LCD_V_RES               (600)    ///< Vertical resolution in pixels
+#define EXAMPLE_LCD_PIXEL_CLOCK_HZ      (30850000U) ///< Pixel clock frequency in Hz (integer constant)
 
 /**
  * @brief Color and Pixel Configuration
@@ -48,23 +46,23 @@
 /**
  * @brief GPIO Pins for RGB LCD Signals
  */
-#define EXAMPLE_LCD_IO_RGB_DISP         (-1)   ///< DISP signal, -1 if not used
-#define EXAMPLE_LCD_IO_RGB_VSYNC        (GPIO_NUM_3)  ///< Vertical sync signal
-#define EXAMPLE_LCD_IO_RGB_HSYNC        (GPIO_NUM_46) ///< Horizontal sync signal
-#define EXAMPLE_LCD_IO_RGB_DE           (GPIO_NUM_5)  ///< Data enable signal
-#define EXAMPLE_LCD_IO_RGB_PCLK         (GPIO_NUM_7)  ///< Pixel clock signal
+#define EXAMPLE_LCD_IO_RGB_DISP         (-1)           ///< DISP signal, -1 if not used
+#define EXAMPLE_LCD_IO_RGB_VSYNC        (GPIO_NUM_3)   ///< Vertical sync signal
+#define EXAMPLE_LCD_IO_RGB_HSYNC        (GPIO_NUM_46)  ///< Horizontal sync signal
+#define EXAMPLE_LCD_IO_RGB_DE           (GPIO_NUM_5)   ///< Data enable signal
+#define EXAMPLE_LCD_IO_RGB_PCLK         (GPIO_NUM_7)   ///< Pixel clock signal
 
 /**
  * @brief GPIO Pins for RGB Data Signals
  */
-// Blue data signals
+/* Blue data (B3..B7) */
 #define EXAMPLE_LCD_IO_RGB_DATA0        (GPIO_NUM_14) ///< B3
 #define EXAMPLE_LCD_IO_RGB_DATA1        (GPIO_NUM_38) ///< B4
 #define EXAMPLE_LCD_IO_RGB_DATA2        (GPIO_NUM_18) ///< B5
 #define EXAMPLE_LCD_IO_RGB_DATA3        (GPIO_NUM_17) ///< B6
 #define EXAMPLE_LCD_IO_RGB_DATA4        (GPIO_NUM_10) ///< B7
 
-// Green data signals
+/* Green data (G2..G7) */
 #define EXAMPLE_LCD_IO_RGB_DATA5        (GPIO_NUM_39) ///< G2
 #define EXAMPLE_LCD_IO_RGB_DATA6        (GPIO_NUM_0)  ///< G3
 #define EXAMPLE_LCD_IO_RGB_DATA7        (GPIO_NUM_45) ///< G4
@@ -72,7 +70,7 @@
 #define EXAMPLE_LCD_IO_RGB_DATA9        (GPIO_NUM_47) ///< G6
 #define EXAMPLE_LCD_IO_RGB_DATA10       (GPIO_NUM_21) ///< G7
 
-// Red data signals
+/* Red data (R3..R7) */
 #define EXAMPLE_LCD_IO_RGB_DATA11       (GPIO_NUM_1)  ///< R3
 #define EXAMPLE_LCD_IO_RGB_DATA12       (GPIO_NUM_2)  ///< R4
 #define EXAMPLE_LCD_IO_RGB_DATA13       (GPIO_NUM_42) ///< R5
@@ -90,42 +88,30 @@
 /**
  * @brief Function Declarations
  */
-esp_lcd_panel_handle_t waveshare_esp32_s3_rgb_lcd_init();
-/**
- * @brief Turn on the LCD backlight.
- */
-void wavesahre_rgb_lcd_bl_on();
-/**
- * @brief Turn off the LCD backlight.
- */
-void wavesahre_rgb_lcd_bl_off();
+esp_lcd_panel_handle_t waveshare_esp32_s3_rgb_lcd_init(void);
+
+/** Turn on the LCD backlight. */
+void wavesahre_rgb_lcd_bl_on(void);
+
+/** Turn off the LCD backlight. */
+void wavesahre_rgb_lcd_bl_off(void);
 
 /**
  * @brief Display a rectangular region of an image on the RGB LCD.
- *
- * @param Xstart Starting X coordinate of the region.
- * @param Ystart Starting Y coordinate of the region.
- * @param Xend Ending X coordinate of the region.
- * @param Yend Ending Y coordinate of the region.
- * @param Image Pointer to the image data buffer.
  */
 void wavesahre_rgb_lcd_display_window(int16_t Xstart, int16_t Ystart, int16_t Xend, int16_t Yend, uint8_t *Image);
 
 /**
  * @brief Display a full-frame image on the RGB LCD.
- *
- * @param Image Pointer to the image data buffer.
  */
 void wavesahre_rgb_lcd_display(uint8_t *Image);
 
 /**
  * @brief Retrieve pointers to the frame buffers for double buffering.
- *
- * @param buf1 Pointer to hold the address of the first frame buffer.
- * @param buf2 Pointer to hold the address of the second frame buffer.
  */
 void waveshare_get_frame_buffer(void **buf1, void **buf2);
 
 void waveahre_rgb_lcd_set_pclk(uint32_t freq_hz);
-void waveshare_rgb_lcd_restart();
+void waveshare_rgb_lcd_restart(void);
+
 #endif // _RGB_LCD_H_
