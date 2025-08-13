@@ -1,21 +1,24 @@
 #ifndef _WIFI_
 #define _WIFI_
 
-#include <string.h>
-#include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
-#include "esp_netif_net_stack.h"
 #include "esp_netif.h"
+#include "esp_netif_net_stack.h"
+#include "esp_wifi.h"
+#include <string.h>
 
 #include "esp_mac.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
 
 // Tag for SoftAP and STA mode logging
-extern const char *TAG_AP ;
-extern const char *TAG_STA;
+extern const char* TAG_AP;
+extern const char* TAG_STA;
 
 // Task handle for Wi-Fi task
 extern TaskHandle_t wifi_TaskHandle;
+extern EventGroupHandle_t wifi_event_group;
 
 // Array to store information about available Access Points (AP)
 extern wifi_ap_record_t ap_info[];
@@ -24,7 +27,11 @@ extern wifi_ap_record_t ap_info[];
 #define DEFAULT_SCAN_LIST_SIZE 20 // 0 ~ 20
 
 /* DHCP server option */
-#define DHCPS_OFFER_DNS             0x02 // DNS option for DHCP server
+#define DHCPS_OFFER_DNS 0x02 // DNS option for DHCP server
+
+#define WIFI_SCAN_BIT BIT0
+#define WIFI_STA_BIT BIT1
+#define WIFI_AP_BIT BIT2
 
 // Function prototypes
 
@@ -38,7 +45,7 @@ void wifi_set_default_netif();
 void wifi_napt_enable();
 
 // Set DNS address for SoftAP
-void wifi_ap_set_dns_addr(esp_netif_t *sta_netif, esp_netif_t *ap_netif);
+void wifi_ap_set_dns_addr(esp_netif_t* sta_netif, esp_netif_t* ap_netif);
 
 // Print the authentication mode (e.g., WPA2, WEP, etc.)
 void print_auth_mode(int authmode);
@@ -50,7 +57,7 @@ void print_cipher_type(int pairwise_cipher, int group_cipher);
 void wifi_scan(void);
 
 // Wi-Fi task that handles Wi-Fi operations
-void wifi_task(void *arg);
+void wifi_task(void* arg);
 
 /* STA (Station) Mode Functions */
 
@@ -58,7 +65,7 @@ void wifi_task(void *arg);
 extern int8_t wifi_last_index;
 
 // The button for the last selected Wi-Fi network in the UI
-extern lv_obj_t *wifi_last_Button;
+extern lv_obj_t* wifi_last_Button;
 
 // Connection flags to track Wi-Fi connection status
 extern bool connection_flag;
@@ -68,7 +75,7 @@ extern bool connection_last_flag;
 void start_wifi_events();
 
 // Initialize Wi-Fi in STA mode with SSID, password, and auth mode
-void wifi_sta_init(uint8_t *ssid, uint8_t *pwd, wifi_auth_mode_t authmode);
+void wifi_sta_init(uint8_t* ssid, uint8_t* pwd, wifi_auth_mode_t authmode);
 
 // Wait for Wi-Fi connection to be established
 void wifi_wait_connect();
@@ -82,7 +89,7 @@ void wifi_close_sta();
 /* AP (Access Point) Mode Functions */
 
 // Initialize SoftAP with SSID, password, and channel
-void wifi_ap_init(uint8_t *ssid, uint8_t *pwd, uint8_t channel);
+void wifi_ap_init(uint8_t* ssid, uint8_t* pwd, uint8_t channel);
 
 // Open SoftAP (Access Point) mode
 void wifi_open_ap();
