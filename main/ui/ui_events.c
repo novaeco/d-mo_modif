@@ -228,8 +228,9 @@ void WIFIConnection(lv_event_t* e) {
   // Disable the "Open WiFi" button
   _ui_state_modify(ui_WIFI_OPEN, LV_STATE_DISABLED, _UI_MODIFY_STATE_ADD);
 
-  // Get the password from the password input field
-  wifi_pwd = (uint8_t*)lv_textarea_get_text(ui_WIFI_INPUT_PWD);
+  // Get the password from the password input field and store it securely
+  const uint8_t* pwd = (const uint8_t*)lv_textarea_get_text(ui_WIFI_INPUT_PWD);
+  wifi_store_password(pwd);
 
   // Signal WiFi task to start station connection
   xEventGroupSetBits(wifi_event_group, WIFI_STA_BIT);

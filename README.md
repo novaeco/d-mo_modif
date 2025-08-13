@@ -70,6 +70,12 @@ The connection between ESP Board and the LCD is as follows:
 - **RS485 half‑duplex** : envoi/réception UART avec interface graphique dédiée.
 - **Contrôle LED & UI LVGL** : exemple de gradation via slider.
 
+### Sécurité
+
+- Les mots de passe Wi‑Fi sont stockés dans une partition NVS chiffrée (`nvs_flash_secure_init`).
+- Un chiffrement AES (mbedtls) est appliqué avant l'écriture pour éviter toute persistance en clair.
+- La clé en clair n'est reconstruite qu'en mémoire vive lors de la connexion.
+
 ### Static crop buffer
 
 `waveshare_rgb_lcd_display_window` réutilise un tampon RGB565 préalloué

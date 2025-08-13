@@ -7,6 +7,8 @@
 #include "esp_netif_net_stack.h"
 #include "esp_wifi.h"
 #include <string.h>
+#include <stddef.h>
+#include "esp_err.h"
 
 #include "esp_mac.h"
 #include "freertos/FreeRTOS.h"
@@ -96,5 +98,9 @@ void wifi_open_ap();
 
 // Close SoftAP mode
 void wifi_close_ap();
+
+// Store and load Wi-Fi password using encrypted NVS
+esp_err_t wifi_store_password(const uint8_t* pwd);
+esp_err_t wifi_load_password(uint8_t* out, size_t out_len);
 
 #endif

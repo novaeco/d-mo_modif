@@ -257,7 +257,6 @@ extern bool WIFI_DIS_PWD;      // Flag for showing password, 1 for visible passw
 extern bool WIFI_AP_PWD;       // Flag for AP password visibility, 1 for visible password
 extern int8_t WIFI_CONNECTION; // Flag for successful WIFI connection, stores position of connection in list
 extern int wifi_index;         // Index of selected WIFI
-extern uint8_t* wifi_pwd;      // Pointer to WIFI password
 extern bool WIFI_CONNECTION_DONE;
 
 extern lv_obj_t* ui_WIFI_SCAN_List; // WIFI scan list object
