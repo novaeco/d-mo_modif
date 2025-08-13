@@ -27,6 +27,18 @@ jobs:
           idf.py reconfigure || true
       - name: Build
         run: idf.py build
+      - name: Build tests/wifi
+        run: |
+          idf.py -C tests/wifi set-target esp32s3
+          idf.py -C tests/wifi build
+      - name: Build tests/can
+        run: |
+          idf.py -C tests/can set-target esp32s3
+          idf.py -C tests/can build
+      - name: Build tests/rs485
+        run: |
+          idf.py -C tests/rs485 set-target esp32s3
+          idf.py -C tests/rs485 build
       - name: Size
         if: always()
         run: idf.py size-components || true
