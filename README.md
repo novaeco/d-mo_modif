@@ -63,6 +63,12 @@ The connection between ESP Board and the LCD is as follows:
 
 * Demonstrates an LVGL slider to control LED brightness.
 
+### Static crop buffer
+
+`waveshare_rgb_lcd_display_window` réutilise un tampon RGB565 préalloué
+(`RGB_LCD_WINDOW_BUF_SIZE`, ≈1,2 Mio pour 1024×600) afin d'éviter les
+allocations dynamiques à chaque appel.
+
 ### Configure the Project
 
 ### Build and Flash
@@ -109,4 +115,3 @@ idf.py build
 idf.py -C tests/smoke set-target esp32s3
 idf.py -C tests/smoke build
 ```
-
