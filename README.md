@@ -63,23 +63,53 @@ The connection between ESP Board and the LCD is as follows:
 
 * Demonstrates an LVGL slider to control LED brightness.
 
+### Fonctionnalités
+
+- **Login utilisateur** : écran d’authentification et création de comptes.
+- **Wi‑Fi STA/AP** : scan des réseaux, connexion ou point d’accès.
+- **RS485 half‑duplex** : envoi/réception UART avec interface graphique dédiée.
+- **Contrôle LED & UI LVGL** : exemple de gradation via slider.
+
 ### Static crop buffer
 
 `waveshare_rgb_lcd_display_window` réutilise un tampon RGB565 préalloué
 (`RGB_LCD_WINDOW_BUF_SIZE`, ≈1,2 Mio pour 1024×600) afin d'éviter les
 allocations dynamiques à chaque appel.
 
-### Configure the Project
+### Configuration, compilation et flash
 
-### Build and Flash
+1. **Configurer l’environnement**
 
-Run `idf.py set-target esp32s3` to select the target chip.
+```bash
+export IDF_PATH=~/esp-idf           # Chemin vers l’ESP‑IDF
+. "${IDF_PATH}/export.sh"          # Ajoute outils et variables
+export IDF_TARGET=esp32s3           # Cible par défaut
+export ESPPORT=/dev/ttyUSB0         # Port série à adapter
+export ESPBAUD=921600               # Vitesse de flash optionnelle
+```
 
-Run `idf.py -p PORT build flash monitor` to build, flash and monitor the project. A fancy animation will show up on the LCD as expected.
+2. **Sélectionner la cible et paramétrer le projet**
 
-The first time you run `idf.py` for the example will cost extra time.
+```bash
+idf.py set-target "${IDF_TARGET}"
+idf.py menuconfig                  # Configuration optionnelle
+```
 
-(To exit the serial monitor, type ``Ctrl-]``.)
+3. **Compiler**
+
+```bash
+idf.py build
+```
+
+4. **Flasher et lancer le moniteur série**
+
+```bash
+idf.py -p "${ESPPORT}" -b "${ESPBAUD}" flash monitor
+```
+
+La première exécution d’`idf.py` peut être plus longue.
+
+(Pour quitter le moniteur série : `Ctrl-]`).
 
 See the [Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html) for full steps to configure and use ESP-IDF to build projects.
 
@@ -110,8 +140,22 @@ idf.py build
 - Lire `AGENTS.md` (global) et fichiers `agents/`
 - Rôles : build, test, ui, refactor, docs, cmake
 
-### Tests smoke LVGL
+### Guide de test rapide
+
+Des scénarios de test minimaux sont fournis sous `tests/` :
+
 ```bash
-idf.py -C tests/smoke set-target esp32s3
+# LVGL : initialisation de la pile graphique
 idf.py -C tests/smoke build
+
+# Wi‑Fi : initialisation du driver
+idf.py -C tests/wifi build
+
+# RS485 : vérification de l’UART half‑duplex
+idf.py -C tests/rs485 build
+
+# CAN : tests du contrôleur CAN intégré
+idf.py -C tests/can build
 ```
+
+Ajouter `-p "${ESPPORT}" flash` pour flasher un test sur la carte.
