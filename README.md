@@ -148,14 +148,14 @@ Des scénarios de test minimaux sont fournis sous `tests/` :
 # LVGL : initialisation de la pile graphique
 idf.py -C tests/smoke build
 
-# Wi‑Fi : initialisation du driver
-idf.py -C tests/wifi build
+# Wi‑Fi : simulation AP/STA avec EventGroup
+idf.py -C tests/wifi flash monitor   # attend "Wi-Fi AP/STA simulation succeeded"
 
-# RS485 : vérification de l’UART half‑duplex
-idf.py -C tests/rs485 build
+# RS485 : loopback half‑duplex
+idf.py -C tests/rs485 flash monitor  # attend "RS485 loopback OK"
 
 # CAN : tests du contrôleur CAN intégré
 idf.py -C tests/can build
 ```
 
-Ajouter `-p "${ESPPORT}" flash` pour flasher un test sur la carte.
+Adapter `-p "${ESPPORT}"` si nécessaire pour flasher la carte.
