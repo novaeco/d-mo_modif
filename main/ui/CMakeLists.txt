@@ -5,6 +5,13 @@ SET(SOURCES screens/ui_Login.c
     screens/ui_Main_CAN.c
     screens/ui_Main_PWM.c
     screens/ui_Main_WIFI.c
+    login.c
+    create_user.c
+    main_screen.c
+    rs485.c
+    can.c
+    pwm.c
+    wifi.c
     ui.c
     components/ui_comp_hook.c
     ui_helpers.c

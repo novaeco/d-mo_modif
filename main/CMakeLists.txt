@@ -2,8 +2,17 @@
 
 # Sources
 file(GLOB_RECURSE srcs
-    "*.c"
-    "ui/*.c"
+    "main.c"
+    "ui/ui.c"
+    "ui/login.c"
+    "ui/create_user.c"
+    "ui/main_screen.c"
+    "ui/rs485.c"
+    "ui/can.c"
+    "ui/pwm.c"
+    "ui/wifi.c"
+    "ui/ui_helpers.c"
+    "ui/ui_events.c"
     "ui/components/*.c"
     "ui/screens/*.c"
     "ui/images/*.c"
