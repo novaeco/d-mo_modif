@@ -11,6 +11,7 @@ TaskHandle_t rs485_TaskHandle;
 
 // Allocate a buffer to store incoming UART data
 static char data[BUF_SIZE] = {0}; // Buffer for receiving data
+static lv_timer_t* rs485_timer;    // Timer to refresh RS485 text area
 
 /**
  * @brief Callback function to update the text area with the received data.
@@ -31,6 +32,7 @@ void rs485_update_textarea_cb(lv_timer_t* timer) {
 
   // Update the text area with the received data
   lv_textarea_set_text(ui_RS485_Read_Area, data);
+  lv_timer_pause(timer); // Run once then pause until reset
 }
 
 /**
@@ -52,6 +54,10 @@ void rs485_task(void* arg) {
   // Initialize UART communication for RS485 with specified TX, RX pins and baud rate
   DEV_UART_Init(ECHO_TEST_TXD, ECHO_TEST_RXD, RS485_BaudRate);
 
+  // Create a single LVGL timer for textarea updates and pause it until needed
+  rs485_timer = lv_timer_create(rs485_update_textarea_cb, 100, NULL);
+  lv_timer_pause(rs485_timer);
+
   while (1) {
     // Get the number of bytes available in the UART receive buffer
     int len = UART_Get_Date_Len();
@@ -71,17 +77,20 @@ void rs485_task(void* arg) {
 
       ESP_LOGI(TAG, "UART_Read_Byte:%s", data);
 
-      lv_timer_t* t = lv_timer_create(rs485_update_textarea_cb, 100, NULL);
-      lv_timer_set_repeat_count(t, 1);
+      lv_timer_reset(rs485_timer);
+      lv_timer_resume(rs485_timer);
     }
 
     // If the RS485_Clear flag is set, clear the data buffer and update the UI
     if (RS485_Clear) {
-      lv_timer_t* t = lv_timer_create(rs485_update_textarea_cb, 100, NULL); // Update the UI every 100ms
-      lv_timer_set_repeat_count(t, 1);
+      lv_timer_reset(rs485_timer); // Update the UI without creating a new timer
+      lv_timer_resume(rs485_timer);
     }
 
     // Delay for 10ms before checking again
     vTaskDelay(10);
   }
+
+  // Clean up timer if the task is ever terminated
+  lv_timer_del(rs485_timer);
 }
