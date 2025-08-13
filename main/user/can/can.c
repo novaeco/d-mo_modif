@@ -72,7 +72,7 @@ void can_task(void* arg) {
       snprintf(message_str + strlen(message_str), sizeof(message_str) - strlen(message_str), "\n");
 
       // Append the formatted message to the global CAN data buffer
-      strncat(can_data, message_str, sizeof(can_data) - strlen(can_data) - 1);
+      strlcat(can_data, message_str, sizeof(can_data));
 
       // Create a timer to update the textarea every 100ms
       lv_timer_t* t = lv_timer_create(can_update_textarea_cb, 100, NULL);
