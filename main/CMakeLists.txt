@@ -1,27 +1,46 @@
 # main/CMakeLists.txt
 
-# Sources
-file(GLOB_RECURSE srcs
-    "main.c"
-    "ui/ui.c"
-    "ui/login.c"
-    "ui/create_user.c"
-    "ui/main_screen.c"
-    "ui/rs485.c"
-    "ui/can.c"
-    "ui/pwm.c"
-    "ui/wifi.c"
-    "ui/ui_helpers.c"
-    "ui/ui_events.c"
-    "ui/components/*.c"
-    "ui/screens/*.c"
-    "ui/images/*.c"
-    "user/add_password/*.c"
-    "user/wifi/*.c"
-    "user/rs485/*.c"
-    "user/can/*.c"
-    "user/pwm/*.c"
-    "user/sd_card/*.c"
+# Sources (mettre à jour cette liste lors de l'ajout ou suppression de fichiers)
+set(SRCS
+    main.c
+    ui/can.c
+    ui/components/ui_comp_hook.c
+    ui/create_user.c
+    ui/images/ui_img_485_png.c
+    ui/images/ui_img_can_png.c
+    ui/images/ui_img_eye_png.c
+    ui/images/ui_img_log_on_png.c
+    ui/images/ui_img_ok_png.c
+    ui/images/ui_img_pwm_png.c
+    ui/images/ui_img_wifi_1_png.c
+    ui/images/ui_img_wifi_2_png.c
+    ui/images/ui_img_wifi_3_png.c
+    ui/images/ui_img_wifi_4_png.c
+    ui/images/ui_img_wifi_png.c
+    ui/login.c
+    ui/main_screen.c
+    ui/pwm.c
+    ui/rs485.c
+    ui/screens/ui_Create_Uesr.c
+    ui/screens/ui_Login.c
+    ui/screens/ui_Main.c
+    ui/screens/ui_Main_CAN.c
+    ui/screens/ui_Main_PWM.c
+    ui/screens/ui_Main_RS485.c
+    ui/screens/ui_Main_WIFI.c
+    ui/ui.c
+    ui/ui_events.c
+    ui/ui_helpers.c
+    ui/wifi.c
+    user/add_password/add_password.c
+    user/can/can.c
+    user/pwm/pwm.c
+    user/rs485/rs485.c
+    user/sd_card/sd_card.c
+    user/wifi/wifi.c
+    user/wifi/wifi_ap.c
+    user/wifi/wifi_scan.c
+    user/wifi/wifi_sta.c
 )
 
 # Include dirs
@@ -40,7 +59,7 @@ set(include_dirs
 )
 
 idf_component_register(
-    SRCS         ${srcs}
+    SRCS         ${SRCS}
     INCLUDE_DIRS ${include_dirs}
     REQUIRES
         lvgl__lvgl
