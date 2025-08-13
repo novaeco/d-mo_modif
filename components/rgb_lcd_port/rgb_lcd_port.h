@@ -91,27 +91,26 @@
 esp_lcd_panel_handle_t waveshare_esp32_s3_rgb_lcd_init(void);
 
 /** Turn on the LCD backlight. */
-void wavesahre_rgb_lcd_bl_on(void);
+void waveshare_rgb_lcd_bl_on(void);
 
 /** Turn off the LCD backlight. */
-void wavesahre_rgb_lcd_bl_off(void);
+void waveshare_rgb_lcd_bl_off(void);
 
 /**
  * @brief Display a rectangular region of an image on the RGB LCD.
  */
-void wavesahre_rgb_lcd_display_window(int16_t Xstart, int16_t Ystart, int16_t Xend, int16_t Yend, uint8_t *Image);
+void waveshare_rgb_lcd_display_window(int16_t Xstart, int16_t Ystart, int16_t Xend, int16_t Yend, uint8_t *Image);
 
 /**
  * @brief Display a full-frame image on the RGB LCD.
  */
-void wavesahre_rgb_lcd_display(uint8_t *Image);
+void waveshare_rgb_lcd_display(uint8_t *Image);
 
 /**
  * @brief Retrieve pointers to the frame buffers for double buffering.
  */
 void waveshare_get_frame_buffer(void **buf1, void **buf2);
-
-void waveahre_rgb_lcd_set_pclk(uint32_t freq_hz);
+void waveshare_rgb_lcd_set_pclk(uint32_t freq_hz);
 void waveshare_rgb_lcd_restart(void);
 
 #endif // _RGB_LCD_H_

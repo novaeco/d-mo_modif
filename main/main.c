@@ -59,7 +59,7 @@ void app_main()
 
     // Turn on the LCD backlight
     // This ensures the display is visible.
-    wavesahre_rgb_lcd_bl_on();
+    waveshare_rgb_lcd_bl_on();
 
     // Initialize the LVGL library, linking it to the LCD and touch panel handles
     // LVGL is a lightweight graphics library used for rendering UI elements.
