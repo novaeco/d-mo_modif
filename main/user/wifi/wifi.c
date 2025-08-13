@@ -5,6 +5,10 @@
 #include "lvgl_port.h"
 #include "rgb_lcd_port.h"
 #include "ui.h"
+#include "nvs.h"
+#include "nvs_flash.h"
+#include "mbedtls/aes.h"
+#include <string.h>
 
 const char* TAG_AP = "WiFi SoftAP"; // Tag for SoftAP mode
 const char* TAG_STA = "WiFi Sta";   // Tag for Station mode
@@ -12,6 +16,67 @@ const char* TAG_STA = "WiFi Sta";   // Tag for Station mode
 TaskHandle_t wifi_TaskHandle;
 EventGroupHandle_t wifi_event_group;
 static wifi_sta_list_t sta_list; // List to hold connected stations information
+
+#define WIFI_NS "wifi"
+#define WIFI_PASS_KEY "pwd"
+#define WIFI_MAX_PWD_LEN 64
+#define AES_KEY_LEN 16
+static const uint8_t s_aes_key[AES_KEY_LEN] = {0};
+
+static void nvs_secure_init(void) {
+  esp_err_t ret = nvs_flash_secure_init();
+  if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    ESP_ERROR_CHECK(nvs_flash_erase());
+    ESP_ERROR_CHECK(nvs_flash_secure_init());
+  } else {
+    ESP_ERROR_CHECK(ret);
+  }
+}
+
+esp_err_t wifi_store_password(const uint8_t* pwd) {
+  size_t len = strnlen((const char*)pwd, WIFI_MAX_PWD_LEN);
+  size_t padded = (len + 15) & ~15;
+  uint8_t buf[WIFI_MAX_PWD_LEN] = {0};
+  memcpy(buf, pwd, len);
+  mbedtls_aes_context ctx;
+  mbedtls_aes_init(&ctx);
+  mbedtls_aes_setkey_enc(&ctx, s_aes_key, AES_KEY_LEN * 8);
+  for (size_t i = 0; i < padded; i += 16) {
+    mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, buf + i, buf + i);
+  }
+  mbedtls_aes_free(&ctx);
+  nvs_handle_t h;
+  ESP_ERROR_CHECK(nvs_open(WIFI_NS, NVS_READWRITE, &h));
+  esp_err_t err = nvs_set_blob(h, WIFI_PASS_KEY, buf, padded);
+  if (err == ESP_OK) err = nvs_commit(h);
+  nvs_close(h);
+  return err;
+}
+
+esp_err_t wifi_load_password(uint8_t* out, size_t out_len) {
+  nvs_handle_t h;
+  esp_err_t err = nvs_open(WIFI_NS, NVS_READONLY, &h);
+  if (err != ESP_OK) return err;
+  size_t len = 0;
+  err = nvs_get_blob(h, WIFI_PASS_KEY, NULL, &len);
+  if (err != ESP_OK || len > out_len) {
+    nvs_close(h);
+    return err;
+  }
+  uint8_t buf[WIFI_MAX_PWD_LEN] = {0};
+  err = nvs_get_blob(h, WIFI_PASS_KEY, buf, &len);
+  nvs_close(h);
+  if (err != ESP_OK) return err;
+  mbedtls_aes_context ctx;
+  mbedtls_aes_init(&ctx);
+  mbedtls_aes_setkey_dec(&ctx, s_aes_key, AES_KEY_LEN * 8);
+  for (size_t i = 0; i < len; i += 16) {
+    mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_DECRYPT, buf + i, out + i);
+  }
+  mbedtls_aes_free(&ctx);
+  out[len] = '\0';
+  return ESP_OK;
+}
 
 // Callback function to update UI when Wi-Fi connection is established
 static void wifi_connection_cb(lv_timer_t* timer) {
@@ -57,6 +122,8 @@ static void wifi_ap_cb(lv_timer_t* timer) {
 
 // Initialize Wi-Fi for STA (Station) and AP (Access Point) modes
 void wifi_init(void) {
+  nvs_secure_init();
+
   // Initialize the TCP/IP stack
   ESP_ERROR_CHECK(esp_netif_init());
 
@@ -109,13 +176,18 @@ void wifi_task(void* arg) {
     }
 
     if (bits & WIFI_STA_BIT) {
-      waveshare_rgb_lcd_set_pclk(12 * 1000 * 1000); // Set pixel clock for the LCD
-      vTaskDelay(20);                               // Delay for a short while
-      wifi_sta_init(ap_info[wifi_index].ssid, wifi_pwd,
-                    ap_info[wifi_index].authmode);                    // Initialize Wi-Fi as STA and connect
-      waveshare_rgb_lcd_set_pclk(EXAMPLE_LCD_PIXEL_CLOCK_HZ);         // Restore original pixel clock
-      lv_timer_t* t = lv_timer_create(wifi_connection_cb, 100, NULL); // Update UI every 100ms
-      lv_timer_set_repeat_count(t, 1);                                // Run only once
+      uint8_t pwd[WIFI_MAX_PWD_LEN] = {0};
+      if (wifi_load_password(pwd, sizeof(pwd)) == ESP_OK) {
+        waveshare_rgb_lcd_set_pclk(12 * 1000 * 1000); // Set pixel clock for the LCD
+        vTaskDelay(20);                               // Delay for a short while
+        wifi_sta_init(ap_info[wifi_index].ssid, pwd,
+                      ap_info[wifi_index].authmode);                    // Initialize Wi-Fi as STA and connect
+        waveshare_rgb_lcd_set_pclk(EXAMPLE_LCD_PIXEL_CLOCK_HZ);         // Restore original pixel clock
+        lv_timer_t* t = lv_timer_create(wifi_connection_cb, 100, NULL); // Update UI every 100ms
+        lv_timer_set_repeat_count(t, 1);                                // Run only once
+      } else {
+        ESP_LOGE(TAG_STA, "Failed to load Wi-Fi password");
+      }
     }
 
     if (bits & WIFI_AP_BIT) {

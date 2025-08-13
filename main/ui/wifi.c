@@ -69,7 +69,6 @@ bool WIFI_DIS_PWD = true;
 bool WIFI_AP_PWD = true;
 int8_t WIFI_CONNECTION = -1;
 int wifi_index = 0;
-uint8_t* wifi_pwd;
 
 lv_obj_t* ui_WIFI_SCAN_List;
 lv_obj_t* WIFI_List_Button;
