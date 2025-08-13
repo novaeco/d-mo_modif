@@ -7,6 +7,7 @@
 static const char *TAG = "PWM";  // Tag used for ESP log output
 TaskHandle_t pwm_TaskHandle;     // Handle for the PWM task
 char bat_v[20];                  // Buffer to store formatted battery voltage string
+static lv_timer_t *bat_timer;    // Timer to refresh battery voltage label
 
 /**
  * @brief Callback function to update the UI with battery voltage information.
@@ -15,9 +16,10 @@ char bat_v[20];                  // Buffer to store formatted battery voltage st
  * 
  * @param timer Pointer to the LVGL timer object
  */
-static void bat_cb(lv_timer_t * timer) 
+static void bat_cb(lv_timer_t * timer)
 {
     lv_label_set_text(ui_BAT_Label0, bat_v); // Update the UI label with the battery voltage string
+    lv_timer_pause(timer);                   // Run once then pause until reset
 }
 
 /**
@@ -53,14 +55,17 @@ void pwm_task(void *arg)
 
         // Format battery voltage string for display
         sprintf(bat_v, "BAT:%0.2fV", value);
-        // Create an LVGL timer to update the UI label
-        lv_timer_t *t = lv_timer_create(bat_cb, 100, NULL);  // Update UI every 100ms
-        lv_timer_set_repeat_count(t, 1); // Set the timer to repeat only once
+        // Trigger the LVGL timer to update the UI label without recreating it
+        lv_timer_reset(bat_timer);
+        lv_timer_resume(bat_timer);
 
         value = 0; // Reset the value for the next cycle
 
         vTaskDelay(100); // Delay before the next measurement cycle
     }
+
+    // Clean up timer if the task is ever terminated
+    lv_timer_del(bat_timer);
 }
 
 /**
@@ -75,6 +80,10 @@ void pwm_init()
 
     // Initialize the GPIO pin for PWM with a 1 kHz frequency
     DEV_GPIO_PWM(LED_GPIO_PIN, 1000); // Set up the PWM on the specified GPIO pin
+
+    // Create a single LVGL timer for battery updates and keep it paused until needed
+    bat_timer = lv_timer_create(bat_cb, 100, NULL);
+    lv_timer_pause(bat_timer);
 
     // Start the battery voltage monitoring task
     xTaskCreate(pwm_task, "pwm_task", 3 * 1024, NULL, 3, &pwm_TaskHandle);
