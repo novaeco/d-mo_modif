@@ -74,15 +74,42 @@ jobs:
           . ${IDF_PATH}/export.sh
           idf.py -C tests/smoke set-target esp32s3
           idf.py -C tests/smoke build
-      - name: Upload smoke artifacts
+      - name: Build tests/wifi
+        shell: bash
+        run: |
+          . ${IDF_PATH}/export.sh
+          idf.py -C tests/wifi set-target esp32s3
+          idf.py -C tests/wifi build
+      - name: Build tests/can
+        shell: bash
+        run: |
+          . ${IDF_PATH}/export.sh
+          idf.py -C tests/can set-target esp32s3
+          idf.py -C tests/can build
+      - name: Build tests/rs485
+        shell: bash
+        run: |
+          . ${IDF_PATH}/export.sh
+          idf.py -C tests/rs485 set-target esp32s3
+          idf.py -C tests/rs485 build
+      - name: Upload test artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-smoke
+          name: firmware-tests
           path: |
             tests/smoke/build/*.bin
             tests/smoke/build/*/*.bin
             tests/smoke/build/*.elf
+            tests/wifi/build/*.bin
+            tests/wifi/build/*/*.bin
+            tests/wifi/build/*.elf
+            tests/can/build/*.bin
+            tests/can/build/*/*.bin
+            tests/can/build/*.elf
+            tests/rs485/build/*.bin
+            tests/rs485/build/*/*.bin
+            tests/rs485/build/*.elf
 
   static_analysis:
     name: static_analysis_agent (cppcheck)
