@@ -44,7 +44,12 @@ void app_main()
 {
     // Initialize the Non-Volatile Storage (NVS) for settings and data persistence
     // This ensures that user data and settings are retained even after power loss.
-    init_nvs();
+    esp_err_t err = init_nvs();
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "NVS init failed: %s", esp_err_to_name(err));
+        return;
+    }
 
     static esp_lcd_panel_handle_t panel_handle = NULL; // Handle for the LCD panel
     static esp_lcd_touch_handle_t tp_handle = NULL;    // Handle for the touch panel
@@ -52,10 +57,20 @@ void app_main()
     // Initialize the GT911 touch screen controller
     // This sets up the touch functionality of the screen.
     tp_handle = touch_gt911_init();
+    if (tp_handle == NULL)
+    {
+        ESP_LOGE(TAG, "GT911 init failed");
+        return;
+    }
 
     // Initialize the Waveshare ESP32-S3 RGB LCD hardware
     // This prepares the LCD panel for display operations.
     panel_handle = waveshare_esp32_s3_rgb_lcd_init();
+    if (panel_handle == NULL)
+    {
+        ESP_LOGE(TAG, "LCD init failed");
+        return;
+    }
 
     // Turn on the LCD backlight
     // This ensures the display is visible.
@@ -63,23 +78,30 @@ void app_main()
 
     // Initialize the LVGL library, linking it to the LCD and touch panel handles
     // LVGL is a lightweight graphics library used for rendering UI elements.
-    ESP_ERROR_CHECK(lvgl_port_init(panel_handle, tp_handle));
+    err = lvgl_port_init(panel_handle, tp_handle);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "LVGL init failed: %s", esp_err_to_name(err));
+        return;
+    }
 
     ESP_LOGI(TAG, "Display LVGL demos");
 
     // Lock the LVGL port to ensure thread safety during API calls
     // This prevents concurrent access issues when using LVGL functions.
-    if (lvgl_port_lock(-1))
+    if (!lvgl_port_lock(-1))
     {
-
-        // Initialize the UI components with LVGL (e.g., demo screens, sliders)
-        // This sets up the user interface elements using the LVGL library.
-        ui_init();
-
-        // Release the mutex after LVGL operations are complete
-        // This allows other tasks to access the LVGL port.
-        lvgl_port_unlock();
+        ESP_LOGE(TAG, "LVGL port lock failed");
+        return;
     }
+
+    // Initialize the UI components with LVGL (e.g., demo screens, sliders)
+    // This sets up the user interface elements using the LVGL library.
+    ui_init();
+
+    // Release the mutex after LVGL operations are complete
+    // This allows other tasks to access the LVGL port.
+    lvgl_port_unlock();
     vTaskDelay(100); // Delay for a short period to ensure stable initialization
 
     // Initialize PWM for controlling backlight brightness (if applicable)
@@ -92,5 +114,9 @@ void app_main()
 
     // Start the WIFI task to handle Wi-Fi functionality
     // This task manages Wi-Fi connections and hotspot creation.
-    xTaskCreate(wifi_task, "wifi_task", 6 * 1024, NULL, 9, &wifi_TaskHandle);
+    if (xTaskCreate(wifi_task, "wifi_task", 6 * 1024, NULL, 9, &wifi_TaskHandle) != pdPASS)
+    {
+        ESP_LOGE(TAG, "Failed to create WiFi task");
+        return;
+    }
 }
