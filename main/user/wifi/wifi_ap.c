@@ -77,12 +77,12 @@ void wifi_open_ap()
             ESP_ERROR_CHECK(esp_wifi_start());
             
             // Adjust the pixel clock for the display
-            waveahre_rgb_lcd_set_pclk(12 * 1000 * 1000);
+            waveshare_rgb_lcd_set_pclk(12 * 1000 * 1000);
             vTaskDelay(20);
             ESP_ERROR_CHECK(esp_wifi_connect()); // Reconnect to the Wi-Fi network
             connection_last_flag = true;
             wifi_wait_connect();
-            waveahre_rgb_lcd_set_pclk(EXAMPLE_LCD_PIXEL_CLOCK_HZ);
+            waveshare_rgb_lcd_set_pclk(EXAMPLE_LCD_PIXEL_CLOCK_HZ);
         } 
     }
     else

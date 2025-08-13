@@ -113,10 +113,10 @@ void wifi_task(void *arg)
         if (WIFI_STA_FLAG)
         {
             WIFI_STA_FLAG = false;
-            waveahre_rgb_lcd_set_pclk(12 * 1000 * 1000);  // Set pixel clock for the LCD
+            waveshare_rgb_lcd_set_pclk(12 * 1000 * 1000);  // Set pixel clock for the LCD
             vTaskDelay(20);  // Delay for a short while
             wifi_sta_init(ap_info[wifi_index].ssid, wifi_pwd, ap_info[wifi_index].authmode);  // Initialize Wi-Fi as STA and connect
-            waveahre_rgb_lcd_set_pclk(EXAMPLE_LCD_PIXEL_CLOCK_HZ);  // Restore original pixel clock
+            waveshare_rgb_lcd_set_pclk(EXAMPLE_LCD_PIXEL_CLOCK_HZ);  // Restore original pixel clock
             lv_timer_t *t = lv_timer_create(wifi_connection_cb, 100, NULL);  // Update UI every 100ms
             lv_timer_set_repeat_count(t, 1);  // Run only once
         }

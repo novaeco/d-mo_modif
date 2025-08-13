@@ -131,7 +131,7 @@ esp_lcd_panel_handle_t waveshare_esp32_s3_rgb_lcd_init(void)
  * @param Yend   Ending Y coordinate (exclusive, absolute).
  * @param Image  Pointer to the image data buffer for full LCD resolution.
  */
-void wavesahre_rgb_lcd_display_window(int16_t Xstart, int16_t Ystart,
+void waveshare_rgb_lcd_display_window(int16_t Xstart, int16_t Ystart,
                                       int16_t Xend, int16_t Yend, uint8_t *Image)
 {
     if (Xstart < 0) Xstart = 0;
@@ -164,7 +164,7 @@ void wavesahre_rgb_lcd_display_window(int16_t Xstart, int16_t Ystart,
 /**
  * @brief Display a full-screen image on the RGB LCD.
  */
-void wavesahre_rgb_lcd_display(uint8_t *Image)
+void waveshare_rgb_lcd_display(uint8_t *Image)
 {
     esp_lcd_panel_draw_bitmap(panel_handle, 0, 0, EXAMPLE_LCD_H_RES, EXAMPLE_LCD_V_RES, Image);
 }
@@ -174,7 +174,7 @@ void waveshare_get_frame_buffer(void **buf1, void **buf2)
     ESP_ERROR_CHECK(esp_lcd_rgb_panel_get_frame_buffer(panel_handle, 2, buf1, buf2));
 }
 
-void waveahre_rgb_lcd_set_pclk(uint32_t freq_hz)
+void waveshare_rgb_lcd_set_pclk(uint32_t freq_hz)
 {
     esp_lcd_rgb_panel_set_pclk(panel_handle, freq_hz);
 }
@@ -187,7 +187,7 @@ void waveshare_rgb_lcd_restart(void)
 /**
  * @brief Turn on the RGB LCD screen backlight.
  */
-void wavesahre_rgb_lcd_bl_on(void)
+void waveshare_rgb_lcd_bl_on(void)
 {
     IO_EXTENSION_Output(IO_EXTENSION_IO_2, 1);
 }
@@ -195,7 +195,7 @@ void wavesahre_rgb_lcd_bl_on(void)
 /**
  * @brief Turn off the RGB LCD screen backlight.
  */
-void wavesahre_rgb_lcd_bl_off(void)
+void waveshare_rgb_lcd_bl_off(void)
 {
     IO_EXTENSION_Output(IO_EXTENSION_IO_2, 0);
 }
